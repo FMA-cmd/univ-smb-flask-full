@@ -1,0 +1,8 @@
+[
+    {
+        "name": "test",
+        "port": "80",
+        "domain": "www.mon-site.local",
+        "id": 1
+    }
+]
