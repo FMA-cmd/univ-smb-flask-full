@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, Response, 
 import requests
 
 app = Flask(__name__)
-app.secret_key = "tp_master_stic_secret" # Pour l'authentification
+app.secret_key = "tp3_TRI" 
 API_URL = "http://127.0.0.1:5001"
 
 @app.route("/login", methods=['GET', 'POST'])
