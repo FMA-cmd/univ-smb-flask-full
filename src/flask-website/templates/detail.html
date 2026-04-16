@@ -1,23 +1,21 @@
 {% extends 'layout.html' %}
 {% block content %}
-<div class="card shadow-sm">
-    <div class="card-header bg-primary text-white d-flex justify-content-between">
-        <h4 class="mb-0">Configuration : {{ item.name }}</h4>
-        <a href="/{{ type }}/{{ item.id }}/download" class="btn btn-light btn-sm">Télécharger .conf</a>
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Configuration : {{ item.name }}</span>
+        <a href="/{{ type }}/{{ item.id }}/download" class="btn btn-primary btn-sm">Télécharger .conf</a>
     </div>
-    <div class="card-body">
-        <h5>1. Fichier Nginx</h5>
-        <pre class="bg-dark text-success p-3 rounded">{% include 'nginx_template.txt' %}</pre>
+    <div class="card-body p-4">
+        <h5 class="fw-bold mb-3" style="color: #102a43;">Fichier Nginx</h5>
+        <pre>{% include 'nginx_template.txt' %}</pre>
 
-        <h5 class="mt-4">2. Déploiement Docker</h5>
-        <pre class="bg-secondary text-white p-3 rounded">
-# Lancer le conteneur
-docker run -d --name nginx_{{ item.id }} \
+        <h5 class="fw-bold mb-3 mt-4" style="color: #102a43;">Déploiement Docker</h5>
+        <pre>docker run -d --name nginx_{{ item.id }} \
   -p {% if item.port %}{{item.port}}{% else %}80{% endif %}:80 \
   -v $(pwd)/config.conf:/etc/nginx/conf.d/default.conf:ro \
   nginx:latest</pre>
         
-        <a href="/{{ type }}/list" class="btn btn-secondary mt-3">Retour</a>
+        <a href="/{{ type }}/list" class="btn btn-light mt-4">Retour à la liste</a>
     </div>
 </div>
 {% endblock %}
