@@ -9,7 +9,12 @@
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 <span><strong>{{ item.name }}</strong> (IP: {{ item.ip_bind }})</span>
                 
-                <a href="/{{ type }}/{{ item.id }}" class="btn btn-primary btn-sm">Voir Détails</a>
+<div>
+    <a href="/{{ type }}/{{ item.id }}" class="btn btn-primary btn-sm">Voir Détails</a>
+    <form action="/{{ type }}/{{ item.id }}/delete" method="POST" style="display:inline;">
+        <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+    </form>
+</div>
             </li>
         {% else %}
             <li class="list-group-item">Aucune configuration trouvée.</li>

@@ -7,8 +7,8 @@ Connexion à Gitpod :
 # Sites
 
 Démarrage du Site Web API :
-
-`cd src/flask-api/ && flask --app api run -p 5000`
+cd src/flask-api/ && flask --app api run -p 5000
+``
 
 Démarrage du Site Web WebSite :
 
