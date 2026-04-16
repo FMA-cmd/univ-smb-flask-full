@@ -1,20 +1,23 @@
 {% extends 'layout.html' %}
-
 {% block content %}
 <div class="container mt-4">
-    <h2>Liste des {{ title }}</h2>
+    <h2>Liste : {{ title }}</h2>
+    <a href="/{{ type }}/create" class="btn btn-success mb-3">Créer une nouvelle configuration</a>
     
-    <ul class="list-group mt-3">
+    <ul class="list-group">
         {% for item in items %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span><strong>{{ item.name }}</strong> (IP: {{ item.ip_bind }})</span>
-                
-<div>
-    <a href="/{{ type }}/{{ item.id }}" class="btn btn-primary btn-sm">Voir Détails</a>
-    <form action="/{{ type }}/{{ item.id }}/delete" method="POST" style="display:inline;">
-        <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
-    </form>
-</div>
+                <span>
+                    <strong>{{ item.name }}</strong> 
+                    {% if type == 'lb' %} (IP: {{ item.ip_bind }}) {% endif %}
+                    {% if type == 'ws' or type == 'rp' %} (Domaine: {{ item.domain }} - Port: {{ item.port }}) {% endif %}
+                </span>
+                <div>
+                    <a href="/{{ type }}/{{ item.id }}" class="btn btn-primary btn-sm">Voir Détails</a>
+                    <form action="/{{ type }}/{{ item.id }}/delete" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                    </form>
+                </div>
             </li>
         {% else %}
             <li class="list-group-item">Aucune configuration trouvée.</li>

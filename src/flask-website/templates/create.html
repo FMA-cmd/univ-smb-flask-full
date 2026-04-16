@@ -1,26 +1,36 @@
 {% extends 'layout.html' %}
-
 {% block content %}
 <div class="container mt-4">
     <h2>{{ title }}</h2>
-    
     <div class="card mt-4" style="max-width: 600px;">
         <div class="card-body">
             <form method="POST">
                 <div class="mb-3">
-                    <label class="form-label">Nom du Load Balancer :</label>
-                    <input type="text" name="name" class="form-control" placeholder="Ex: LB Inter 3" required>
+                    <label class="form-label">Nom :</label>
+                    <input type="text" name="name" class="form-control" required>
                 </div>
                 
+                {% if type == 'lb' %}
                 <div class="mb-3">
                     <label class="form-label">IP Bind (Écoute) :</label>
-                    <input type="text" name="ip_bind" class="form-control" placeholder="Ex: 172.0.0.3" required>
+                    <input type="text" name="ip_bind" class="form-control" required>
                 </div>
-                
                 <div class="mb-3">
                     <label class="form-label">Proxy Pass (Destination) :</label>
-                    <input type="text" name="pass" class="form-control" placeholder="Ex: http://localhost/C" required>
+                    <input type="text" name="pass" class="form-control" required>
                 </div>
+                {% endif %}
+
+                {% if type == 'ws' or type == 'rp' %}
+                <div class="mb-3">
+                    <label class="form-label">Port :</label>
+                    <input type="number" name="port" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nom de domaine :</label>
+                    <input type="text" name="domain" class="form-control" required>
+                </div>
+                {% endif %}
                 
                 <button type="submit" class="btn btn-success">Enregistrer</button>
                 <a href="/{{ type }}/list" class="btn btn-secondary">Annuler</a>
