@@ -1,0 +1,21 @@
+{% if type == 'lb' %}
+upstream backend {
+    server backend_1:80;
+}
+server {
+    listen {{ item.ip_bind }}:80;
+    location / { proxy_pass {{ item.pass }}; }
+}
+{% elif type == 'ws' %}
+server {
+    listen {{ item.port }};
+    server_name {{ item.domain }};
+    root /var/www/{{ item.name }};
+}
+{% else %}
+server {
+    listen {{ item.port }};
+    server_name {{ item.domain }};
+    location / { proxy_pass http://localhost:8080; }
+}
+{% endif %}

@@ -1,84 +1,59 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, Response, session
 import requests
 
 app = Flask(__name__)
+app.secret_key = "tp_master_stic_secret" # Pour l'authentification
 API_URL = "http://127.0.0.1:5001"
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        if request.form.get('username') == 'admin' and request.form.get('password') == 'admin':
+            session['user'] = 'admin'
+            return redirect(url_for('start'))
+    return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    session.pop('user', None)
+    return redirect(url_for('start'))
 
 @app.route("/")
 def start():
     return render_template("start.html")
 
-@app.route("/lb/list")
-def lb_list():
-    donnees_api = requests.get(f"{API_URL}/config/lb").json()
-    return render_template("list.html", items=donnees_api, title="Load Balancers", type="lb")
+@app.route("/<type>/list")
+def item_list(type):
+    titles = {"lb": "Load Balancers", "ws": "Serveurs Web", "rp": "Reverse Proxies"}
+    data = requests.get(f"{API_URL}/config/{type}").json()
+    return render_template("list.html", items=data, title=titles[type], type=type)
 
-@app.route("/lb/<int:id>")
-def lb_detail(id):
-    reponse = requests.get(f"{API_URL}/config/lb/{id}")
-    if reponse.status_code == 404: return "Introuvable", 404
-    return render_template("detail.html", item=reponse.json(), type="lb")
-
-@app.route("/lb/create", methods=['GET', 'POST'])
-def lb_create():
+@app.route("/<type>/create", methods=['GET', 'POST'])
+def item_create(type):
+    if not session.get('user'): return redirect(url_for('login'))
     if request.method == 'POST':
-        data = {"name": request.form.get("name"), "ip_bind": request.form.get("ip_bind"), "pass": request.form.get("pass")}
-        requests.post(f"{API_URL}/config/lb", json=data)
-        return redirect(url_for('lb_list'))
-    return render_template("create.html", title="Créer un Load Balancer", type="lb")
+        data = {k: v for k, v in request.form.items()}
+        requests.post(f"{API_URL}/config/{type}", json=data)
+        return redirect(url_for('item_list', type=type))
+    return render_template("create.html", type=type)
 
-@app.route("/lb/<int:id>/delete", methods=['POST'])
-def lb_delete(id):
-    requests.delete(f"{API_URL}/config/lb/{id}")
-    return redirect(url_for('lb_list'))
+@app.route("/<type>/<int:id>")
+def item_detail(type, id):
+    item = requests.get(f"{API_URL}/config/{type}/{id}").json()
+    return render_template("detail.html", item=item, type=type)
 
-@app.route("/ws/list")
-def ws_list():
-    donnees_api = requests.get(f"{API_URL}/config/ws").json()
-    return render_template("list.html", items=donnees_api, title="Serveurs Web", type="ws")
+@app.route("/<type>/<int:id>/delete", methods=['POST'])
+def item_delete(type, id):
+    if not session.get('user'): return redirect(url_for('login'))
+    requests.delete(f"{API_URL}/config/{type}/{id}")
+    return redirect(url_for('item_list', type=type))
 
-@app.route("/ws/<int:id>")
-def ws_detail(id):
-    reponse = requests.get(f"{API_URL}/config/ws/{id}")
-    if reponse.status_code == 404: return "Introuvable", 404
-    return render_template("detail.html", item=reponse.json(), type="ws")
-
-@app.route("/ws/create", methods=['GET', 'POST'])
-def ws_create():
-    if request.method == 'POST':
-        data = {"name": request.form.get("name"), "port": request.form.get("port"), "domain": request.form.get("domain")}
-        requests.post(f"{API_URL}/config/ws", json=data)
-        return redirect(url_for('ws_list'))
-    return render_template("create.html", title="Créer un Serveur Web", type="ws")
-
-@app.route("/ws/<int:id>/delete", methods=['POST'])
-def ws_delete(id):
-    requests.delete(f"{API_URL}/config/ws/{id}")
-    return redirect(url_for('ws_list'))
-
-@app.route("/rp/list")
-def rp_list():
-    donnees_api = requests.get(f"{API_URL}/config/rp").json()
-    return render_template("list.html", items=donnees_api, title="Reverse Proxies", type="rp")
-
-@app.route("/rp/<int:id>")
-def rp_detail(id):
-    reponse = requests.get(f"{API_URL}/config/rp/{id}")
-    if reponse.status_code == 404: return "Introuvable", 404
-    return render_template("detail.html", item=reponse.json(), type="rp")
-
-@app.route("/rp/create", methods=['GET', 'POST'])
-def rp_create():
-    if request.method == 'POST':
-        data = {"name": request.form.get("name"), "port": request.form.get("port"), "domain": request.form.get("domain")}
-        requests.post(f"{API_URL}/config/rp", json=data)
-        return redirect(url_for('rp_list'))
-    return render_template("create.html", title="Créer un Reverse Proxy", type="rp")
-
-@app.route("/rp/<int:id>/delete", methods=['POST'])
-def rp_delete(id):
-    requests.delete(f"{API_URL}/config/rp/{id}")
-    return redirect(url_for('rp_list'))
+@app.route("/<type>/<int:id>/download")
+def download(type, id):
+    item = requests.get(f"{API_URL}/config/{type}/{id}").json()
+    content = render_template(f"nginx_template.txt", item=item, type=type)
+    return Response(content, mimetype="text/plain", 
+                    headers={"Content-Disposition": f"attachment;filename={type}_{id}.conf"})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

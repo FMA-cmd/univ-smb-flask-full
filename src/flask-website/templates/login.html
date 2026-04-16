@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="card mx-auto mt-5 p-4 shadow-sm" style="max-width: 400px;">
+    <h4 class="text-center">Authentification</h4>
+    <form method="POST">
+        <div class="mb-3"><input type="text" name="username" class="form-control" placeholder="admin" required></div>
+        <div class="mb-3"><input type="password" name="password" class="form-control" placeholder="admin" required></div>
+        <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+    </form>
+</div>
+{% endblock %}
