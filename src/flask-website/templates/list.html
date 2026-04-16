@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Liste des {{ title }}</h2>
+    
+    <ul class="list-group mt-3">
+        {% for item in items %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span><strong>{{ item.name }}</strong> (IP: {{ item.ip_bind }})</span>
+                
+                <a href="/{{ type }}/{{ item.id }}" class="btn btn-primary btn-sm">Voir Détails</a>
+            </li>
+        {% else %}
+            <li class="list-group-item">Aucune configuration trouvée.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
