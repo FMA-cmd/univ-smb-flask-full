@@ -24,7 +24,6 @@ def get_next_id(data):
 def api_home():
     return jsonify({"status": "API Online", "endpoints": ["/config/lb", "/config/ws", "/config/rp"]})
 
-# Routes génériques pour LB, WS, RP
 @app.route("/config/<type>", methods=['GET', 'POST'])
 def manage_list(type):
     file = f"{'loadbalancer' if type=='lb' else 'webserver' if type=='ws' else 'reverseproxy'}.json"
